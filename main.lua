@@ -72,11 +72,7 @@ function love.update(dt)
 	for y = 1, ysz do
 		for x = 1, xsz do
 			n = neighbours(_gGrid, x, y)
-			if n < 2 or n > 3 then
-				g[y][x] = false
-			elseif n == 3 then
-				g[y][x] = true
-			end
+			g[y][x] = _gGrid[y][x] and n==2 or n==3
 		end
 	end
 
