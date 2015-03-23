@@ -54,11 +54,7 @@ end
 function love.load()
 	love.window.setTitle("Game Of Life")
 	love.resize()
-	for y = 1, #_gGrid do
-		for x = 1, #_gGrid[y] do
-			_gGrid[y][x] = math.random() > 0.5
-		end
-	end
+	randomise(_gGrid)
 end
 
 function love.update(dt)
@@ -87,6 +83,14 @@ function love.update(dt)
 	_gGrid = g
 end
 
+function love.keypressed(key, isrepeat)
+	if key == "r" then
+		randomise(_gGrid)
+	elseif key == "q" then
+		love.event.quit()
+	end
+end
+
 function neighbours (grid, x, y)
 	n = 0
 	ysz = #grid
@@ -103,4 +107,12 @@ function neighbours (grid, x, y)
 	if grid[(y+1)%ysz + 1][(x-1)%xsz + 1] then n = n+1 end
 	if grid[(y-1)%ysz + 1][(x+1)%xsz + 1] then n = n+1 end
 	return n
+end
+
+function randomise(grid)
+	for y = 1, #grid do
+		for x = 1, #grid[y] do
+			grid[y][x] = math.random() > 0.5
+		end
+	end
 end
