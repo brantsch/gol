@@ -2,6 +2,7 @@ _gCellSize = 10
 _gCircleSegments = 16
 _gGrid = {{}}
 _gUpdateInterval = 0.1
+_gPaused = false
 _t = 0
 
 function resizeArray(tbl, new_sz, cb)
@@ -58,6 +59,7 @@ function love.load()
 end
 
 function love.update(dt)
+	if _gPaused then return end
 	if _t < _gUpdateInterval then
 		_t = _t + dt
 		return
@@ -84,6 +86,8 @@ function love.keypressed(key, isrepeat)
 		randomise(_gGrid)
 	elseif key == "q" then
 		love.event.quit()
+	elseif key == " " then
+		_gPaused = not _gPaused
 	end
 end
 
