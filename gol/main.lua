@@ -2,7 +2,8 @@ _gCellSize = 10
 _gCircleSegments = 16
 _gGrid = {{}}
 _gGridB = {{}}
-_gUpdateInterval = 0.1
+_gTargetFrameRate = 15
+_gTargetFrameTime = 1/_gTargetFrameRate
 _gPaused = false
 _t = 0
 
@@ -35,12 +36,14 @@ end
 
 function love.draw()
 	r = _gCellSize/2
-	love.graphics.setColor(255,255,255)
 	for y=1,#_gGrid do
 		for x=1,#_gGrid[y] do
 			if _gGrid[y][x] then
-				love.graphics.circle("fill",x*_gCellSize,y*_gCellSize,r)
+				love.graphics.setColor(255,255,255)
+			else
+				love.graphics.setColor(0,0,0)
 			end
+			love.graphics.circle("fill",x*_gCellSize,y*_gCellSize,r)
 		end
 	end
 end
@@ -60,12 +63,6 @@ end
 
 function love.update(dt)
 	if _gPaused then return end
-	if _t < _gUpdateInterval then
-		_t = _t + dt
-		return
-	else
-		_t = 0
-	end
 
 	ysz = #_gGrid
 	xsz = #_gGrid[1]
@@ -115,4 +112,66 @@ function randomise(grid)
 			grid[y][x] = math.random() > 0.5
 		end
 	end
+end
+
+function love.run()
+	if love.math then
+		love.math.setRandomSeed(os.time())
+		for i=1,3 do love.math.random() end
+	end
+
+	if love.event then
+		love.event.pump()
+	end
+
+	if love.load then love.load(arg) end
+
+	-- We don't want the first frame's dt to include time taken by love.load.
+	if love.timer then love.timer.step() end
+
+	local dt = 0
+
+	-- Main loop time.
+	repeat
+
+		local tBefore = 0
+		if love.timer then tBefore = love.timer.getTime() end
+
+		-- Process events.
+		if love.event then
+			love.event.pump()
+			for e,a,b,c,d in love.event.poll() do
+				if e == "quit" then
+					if not love.quit or not love.quit() then
+						if love.audio then
+							love.audio.stop()
+						end
+						return
+					end
+				end
+				love.handlers[e](a,b,c,d)
+			end
+		end
+
+		-- Update dt, as we'll be passing it to update
+		if love.timer then
+			love.timer.step()
+			dt = love.timer.getDelta()
+		end
+
+		-- Call update and draw
+		love.update(dt) -- will pass 0 if love.timer is disabled
+
+		if love.window and love.graphics and love.window.isCreated() then
+			love.draw()
+			love.graphics.present()
+		end
+
+		if love.timer then 
+			frameTime = love.timer.getTime() - tBefore
+			sleepTime = _gTargetFrameTime - frameTime
+			if sleepTime > 0 then love.timer.sleep(sleepTime) end
+		end
+
+	until false
 end
