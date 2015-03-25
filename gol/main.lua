@@ -35,14 +35,12 @@ end
 
 function love.draw()
 	r = _gCellSize/2
+	love.graphics.setColor(255,255,255)
 	for y=1,#_gGrid do
 		for x=1,#_gGrid[y] do
 			if _gGrid[y][x] then
-				love.graphics.setColor(255,255,255)
-			else 
-				love.graphics.setColor(0,0,0)
+				love.graphics.circle("fill",x*_gCellSize,y*_gCellSize,r)
 			end
-			love.graphics.circle("fill",x*_gCellSize,y*_gCellSize,r)
 		end
 	end
 end
