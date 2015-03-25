@@ -1,6 +1,7 @@
 _gCellSize = 10
 _gCircleSegments = 16
 _gGrid = {{}}
+_gGridB = {{}}
 _gUpdateInterval = 0.1
 _gPaused = false
 _t = 0
@@ -50,6 +51,7 @@ function love.resize()
 	local x_size_new = love.window.getWidth() / _gCellSize
 	local y_size_new = love.window.getHeight() / _gCellSize
 	resizeGrid(_gGrid, x_size_new, y_size_new)
+	resizeGrid(_gGridB, x_size_new, y_size_new)
 end
 
 function love.load()
@@ -69,8 +71,7 @@ function love.update(dt)
 
 	ysz = #_gGrid
 	xsz = #_gGrid[1]
-	g = {{}}
-	resizeGrid(g, xsz, ysz)
+	g = _gGridB
 	for y = 1, ysz do
 		for x = 1, xsz do
 			n = neighbours(_gGrid, x, y)
@@ -78,6 +79,7 @@ function love.update(dt)
 		end
 	end
 
+	_gGridB = _gGrid
 	_gGrid = g
 end
 
